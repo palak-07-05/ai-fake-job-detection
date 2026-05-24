@@ -1,4 +1,4 @@
-# AI-Based Fake Job Posting Detection System
+# JobShieldAI
 
 ## Overview
 This project uses Machine Learning and Natural Language Processing (NLP) to detect fake and fraudulent job postings.
