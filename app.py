@@ -1,10 +1,13 @@
 import streamlit as st
-import pickle
 import time
 import plotly.graph_objects as go
-from database import add_user, login_user
 
+from src.predict import predict_job
+from src.preprocess import clean_text
+
+# =========================================
 # PAGE CONFIG
+# =========================================
 
 st.set_page_config(
     page_title="JobShield AI",
@@ -12,275 +15,154 @@ st.set_page_config(
     layout="wide"
 )
 
-# SESSION
+# =========================================
+# TITLE
+# =========================================
 
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
+st.title("🛡️ JobShield AI")
+st.subheader("AI-Powered Fake Job Detection System")
 
-# CUSTOM CSS
+st.markdown("---")
 
-st.markdown("""
-<style>
+# =========================================
+# INPUT
+# =========================================
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+job_text = st.text_area(
+    "Paste Job Description",
+    height=300,
+    placeholder="Paste complete job description here..."
+)
 
-html, body, [class*="css"] {
-    font-family: 'Poppins', sans-serif;
-    background-color: #050816;
-    color: white;
-}
+# =========================================
+# ANALYZE BUTTON
+# =========================================
 
-.stApp {
-    background: linear-gradient(to bottom right, #050816, #0F172A);
-}
+if st.button("Analyze Job"):
 
-/* LOGIN CARD */
+    # Empty input
+    if not job_text.strip():
 
-.login-card {
-    background: rgba(17, 24, 39, 0.8);
-    padding: 40px;
-    border-radius: 24px;
-    margin-top: 60px;
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 0 30px rgba(124,58,237,0.35);
-}
-
-/* HERO */
-
-.hero {
-    text-align: center;
-    padding-top: 30px;
-    padding-bottom: 20px;
-}
-
-.hero-title {
-    font-size: 70px;
-    font-weight: bold;
-    color: white;
-}
-
-.hero-subtitle {
-    color: #94A3B8;
-    font-size: 22px;
-}
-
-/* INPUT */
-
-.stTextInput input {
-    background-color: #111827;
-    color: white;
-    border-radius: 15px;
-    border: 2px solid #7C3AED;
-}
-
-/* BUTTON */
-
-.stButton button {
-    background: linear-gradient(90deg, #7C3AED, #3B82F6);
-    color: white;
-    border-radius: 15px;
-    height: 55px;
-    width: 100%;
-    font-size: 18px;
-    font-weight: bold;
-    border: none;
-}
-
-/* MAIN CARD */
-
-.glass-card {
-    background: rgba(17, 24, 39, 0.75);
-    border-radius: 24px;
-    padding: 35px;
-    margin-top: 30px;
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 0 30px rgba(124,58,237,0.3);
-}
-
-.fake-text {
-    color: #EF4444;
-    font-size: 42px;
-    font-weight: bold;
-    text-align: center;
-}
-
-.real-text {
-    color: #10B981;
-    font-size: 42px;
-    font-weight: bold;
-    text-align: center;
-}
-
-.footer {
-    text-align: center;
-    color: #94A3B8;
-    margin-top: 60px;
-    padding-bottom: 20px;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-# LOGIN / SIGNUP PAGE
-
-if not st.session_state.logged_in:
-
-    st.markdown("""
-    <div class="hero">
-        <div class="hero-title">🛡️ JobShield AI</div>
-        <div class="hero-subtitle">
-            AI-Powered Fake Job Detection Platform
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    menu = ["Login", "Create Account"]
-
-    choice = st.selectbox("Select Option", menu)
-
-    st.markdown('<div class="login-card">', unsafe_allow_html=True)
-
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-
-    # LOGIN
-
-    if choice == "Login":
-
-        if st.button("Login"):
-
-            result = login_user(username, password)
-
-            if result:
-
-                st.success("Login Successful")
-
-                st.session_state.logged_in = True
-                st.rerun()
-
-            else:
-
-                st.error("Invalid Username or Password")
-
-    # SIGNUP
+        st.warning("Please enter a job description.")
 
     else:
 
-        if st.button("Create Account"):
+        with st.spinner("Analyzing Job Description..."):
 
-            add_user(username, password)
+            time.sleep(1)
 
-            st.success("Account Created Successfully")
+            # Clean text
+            cleaned_text = clean_text(job_text)
 
-            st.info("Go to Login Menu to Login")
+            # Prediction
+            result = predict_job(cleaned_text)
 
-    st.markdown('</div>', unsafe_allow_html=True)
+            # Scores
+            fake_score = result["fake_score"]
+            real_score = result["real_score"]
 
-# MAIN WEBSITE
+            # Prediction
+            is_fake = result["prediction"] == 1
 
-else:
+        st.markdown("---")
 
-    model = pickle.load(open("model.pkl", "rb"))
-    vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+        # =========================================
+        # RESULT SECTION
+        # =========================================
 
-    # LOGOUT
+        st.subheader("Detection Result")
 
-    if st.sidebar.button("Logout"):
+        if is_fake:
 
-        st.session_state.logged_in = False
-        st.rerun()
-
-    # HERO
-
-    st.markdown("""
-    <div class="hero">
-        <div class="hero-title">🛡️ JobShield AI</div>
-        <div class="hero-subtitle">
-            AI-Powered Fake Job Detection Platform
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # INPUT
-
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-
-    job_text = st.text_area(
-        "Paste Job Description",
-        height=250
-    )
-
-    analyze = st.button("Analyze with AI")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # PREDICTION
-
-    if analyze:
-
-        if job_text.strip() == "":
-
-            st.warning("Please enter a job description.")
+            st.error("⚠️ Fake Job Detected")
 
         else:
 
-            with st.spinner("Analyzing with AI..."):
+            st.success("✅ Legitimate Job Posting")
 
-                time.sleep(2)
+        # =========================================
+        # METRICS
+        # =========================================
 
-                vector = vectorizer.transform([job_text])
+        col1, col2 = st.columns(2)
 
-                prediction = model.predict(vector)[0]
-
-                probability = model.predict_proba(vector)[0]
-
-                fake_score = probability[1] * 100
-                real_score = probability[0] * 100
-
-            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-
-            if prediction == 1:
-
-                st.markdown(
-                    '<div class="fake-text">⚠️ Fake Job Detected</div>',
-                    unsafe_allow_html=True
-                )
-
-                score = fake_score
-
-            else:
-
-                st.markdown(
-                    '<div class="real-text">✅ Real Job Posting</div>',
-                    unsafe_allow_html=True
-                )
-
-                score = real_score
-
-            # AI GAUGE
-
-            fig = go.Figure(go.Indicator(
-                mode="gauge+number",
-                value=score,
-                title={'text': "AI Confidence Score"},
-                gauge={
-                    'axis': {'range': [0, 100]},
-                    'bar': {'color': "#7C3AED"},
-                    'bgcolor': "#111827",
-                }
-            ))
-
-            fig.update_layout(
-                paper_bgcolor="#111827",
-                font={'color': "white"}
+        with col1:
+            st.metric(
+                "Fake Probability",
+                f"{fake_score:.2f}%"
             )
 
-            st.plotly_chart(fig, use_container_width=True)
+        with col2:
+            st.metric(
+                "Real Probability",
+                f"{real_score:.2f}%"
+            )
 
-            st.markdown('</div>', unsafe_allow_html=True)
+        # =========================================
+        # PROGRESS BAR
+        # =========================================
 
-    st.markdown("""
-    <div class="footer">
-    Built with AI • NLP • Machine Learning
-    </div>
-    """, unsafe_allow_html=True)
+        st.write("### Scam Risk Level")
+
+        st.progress(int(fake_score) / 100)
+
+        # =========================================
+        # GAUGE CHART
+        # =========================================
+
+        fig = go.Figure(go.Indicator(
+
+            mode="gauge+number",
+
+            value=fake_score,
+
+            title={'text': "Fraud Risk Score"},
+
+            gauge={
+
+                'axis': {'range': [0, 100]},
+
+                'bar': {'color': "red"},
+
+                'steps': [
+
+                    {'range': [0, 30], 'color': "green"},
+                    {'range': [30, 70], 'color': "orange"},
+                    {'range': [70, 100], 'color': "red"}
+
+                ],
+            }
+        ))
+
+        fig.update_layout(
+            height=400
+        )
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
+
+        # =========================================
+        # FINAL MESSAGE
+        # =========================================
+
+        st.markdown("---")
+
+        if fake_score >= 70:
+
+            st.error(
+                "This posting contains multiple suspicious patterns commonly found in fraudulent jobs."
+            )
+
+        elif fake_score >= 40:
+
+            st.warning(
+                "This posting shows some suspicious characteristics. Verify company details carefully."
+            )
+
+        else:
+
+            st.success(
+                "This posting appears relatively safe based on AI analysis."
+            )

@@ -1,118 +1,227 @@
 import streamlit as st
+import base64
+import os
 
+# =========================================
 # PAGE CONFIG
+# =========================================
 
 st.set_page_config(
     page_title="About JobShield AI",
-    page_icon="🛡",
+    page_icon="🛡️",
     layout="wide"
 )
 
-# CUSTOM CSS
+# =========================================
+# FUNCTION TO LOAD IMAGE
+# =========================================
 
-st.markdown("""
+def get_base64(file_path):
+    try:
+        with open(file_path, "rb") as f:
+            data = f.read()
+        return base64.b64encode(data).decode()
+    except:
+        return None
+
+# =========================================
+# LOAD BACKGROUND IMAGE
+# =========================================
+
+bg_image = get_base64("assets/background.png")
+
+# =========================================
+# BACKGROUND CSS
+# =========================================
+
+background_css = ""
+
+if bg_image:
+    background_css = f"""
+    background-image: url("data:image/png;base64,{bg_image}");
+    """
+
+# =========================================
+# CUSTOM CSS
+# =========================================
+
+st.markdown(f"""
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
 
-html, body, [class*="css"] {
+html, body, [class*="css"] {{
     font-family: 'Poppins', sans-serif;
-    background-color: #050816;
     color: white;
-}
+}}
 
-/* MAIN BACKGROUND */
+/* MAIN APP */
 
-.stApp {
-    background: linear-gradient(to bottom right, #050816, #0F172A);
-}
+.stApp {{
+    {background_css}
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: #050816;
+}}
+
+/* REMOVE STREAMLIT DEFAULTS */
+
+header {{
+    visibility: hidden;
+}}
+
+footer {{
+    visibility: hidden;
+}}
+
+#MainMenu {{
+    visibility: hidden;
+}}
+
+/* MAIN OVERLAY */
+
+.main-overlay {{
+    background: rgba(5, 8, 22, 0.82);
+    padding: 40px;
+    border-radius: 25px;
+    margin-top: 20px;
+}}
 
 /* HERO SECTION */
 
-.hero {
+.hero {{
     text-align: center;
-    padding-top: 50px;
+    padding-top: 30px;
     padding-bottom: 30px;
-}
+}}
 
-.hero-title {
-    font-size: 70px;
+.hero-title {{
+    font-size: 60px;
     font-weight: 700;
     color: white;
-}
+}}
 
-.hero-subtitle {
+.hero-subtitle {{
     font-size: 22px;
-    color: #94A3B8;
+    color: #CBD5E1;
     margin-top: 10px;
-}
+}}
 
 /* GLASS CARD */
 
-.glass-card {
+.glass-card {{
     background: rgba(17, 24, 39, 0.75);
     backdrop-filter: blur(14px);
     border-radius: 24px;
     padding: 40px;
     margin-top: 30px;
     border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
-}
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.35);
+}}
 
-/* HEADINGS */
+/* SECTION TITLE */
 
-.section-title {
-    color: #7C3AED;
-    font-size: 34px;
+.section-title {{
+    color: #A855F7;
+    font-size: 32px;
     font-weight: bold;
-    margin-top: 25px;
-    margin-bottom: 15px;
-}
+    margin-top: 35px;
+    margin-bottom: 20px;
+}}
 
-/* PARAGRAPHS */
+/* DESCRIPTION */
 
-.description {
-    color: #D1D5DB;
+.description {{
+    color: #E2E8F0;
     font-size: 18px;
     line-height: 1.9;
-}
+}}
 
-/* FEATURE BOXES */
+/* FEATURE BOX */
 
-.feature-box {
-    background: rgba(30, 41, 59, 0.8);
+.feature-box {{
+    background: rgba(30, 41, 59, 0.82);
     padding: 25px;
     border-radius: 20px;
     margin-top: 20px;
     border: 1px solid rgba(255,255,255,0.08);
-}
+    transition: all 0.3s ease;
+}}
+
+.feature-box:hover {{
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+}}
+
+/* FEATURE TITLE */
+
+.feature-box h3 {{
+    color: white;
+    margin-bottom: 10px;
+}}
 
 /* FOOTER */
 
-.footer {
+.footer {{
     text-align: center;
-    color: #94A3B8;
+    color: #CBD5E1;
     margin-top: 50px;
     padding-bottom: 20px;
-}
+    font-size: 15px;
+}}
+
+/* MOBILE RESPONSIVE */
+
+@media screen and (max-width: 768px) {{
+
+    .hero-title {{
+        font-size: 40px;
+    }}
+
+    .hero-subtitle {{
+        font-size: 18px;
+    }}
+
+    .description {{
+        font-size: 16px;
+    }}
+
+    .glass-card {{
+        padding: 20px;
+    }}
+
+    .main-overlay {{
+        padding: 20px;
+    }}
+}}
 
 </style>
 """, unsafe_allow_html=True)
 
+# =========================================
+# MAIN CONTENT
+# =========================================
+
+st.markdown('<div class="main-overlay">', unsafe_allow_html=True)
+
 # HERO SECTION
 
 st.markdown("""
-<div class="hero">
-    <div class="hero-title">🛡 About JobShield AI</div>
-    <div class="hero-subtitle">
-        Protecting Careers with Artificial Intelligence
-    </div>
+<div class="hero-title">
+    🛡️ About JobShield AI
+</div>
+
+<div class="hero-subtitle">
+    Protecting Careers with Artificial Intelligence
 </div>
 """, unsafe_allow_html=True)
 
-# MAIN CONTENT
+# GLASS CARD START
 
 st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+
+# ABOUT DESCRIPTION
 
 st.markdown("""
 <div class="description">
@@ -121,11 +230,18 @@ Job hunting should feel exciting — not dangerous.
 
 Every day, thousands of people apply for online jobs hoping to build successful careers and secure their future. However, hidden among legitimate opportunities are fraudulent job postings designed to scam users, steal personal information, and exploit job seekers.
 
+<br><br>
+
 <b>JobShield AI</b> was created to fight back.
+
+<br><br>
 
 JobShield AI is an advanced AI-powered fake job detection platform that uses Machine Learning and Natural Language Processing (NLP) to analyze job postings and identify suspicious patterns in real time.
 
+<br><br>
+
 The platform intelligently scans:
+
 <ul>
 <li>Job descriptions</li>
 <li>Company information</li>
@@ -136,7 +252,9 @@ The platform intelligently scans:
 
 to determine whether a job opportunity appears legitimate or potentially fraudulent.
 
-Inspired by modern AI platforms and cybersecurity systems, JobShield AI combines intelligent machine learning with a futuristic Netflix-style user experience.
+<br>
+
+Inspired by modern AI platforms and cybersecurity systems, JobShield AI combines intelligent machine learning with a futuristic startup-style user experience.
 
 </div>
 """, unsafe_allow_html=True)
@@ -144,26 +262,36 @@ Inspired by modern AI platforms and cybersecurity systems, JobShield AI combines
 # FEATURES SECTION
 
 st.markdown("""
-<div class="section-title">🚀 Core Features</div>
+<div class="section-title">
+🚀 Core Features
+</div>
 """, unsafe_allow_html=True)
 
-# FEATURE BOXES
-
 features = [
-    ("🤖 AI-Powered Detection",
-     "Uses Machine Learning and NLP models trained on real-world recruitment datasets to identify fraudulent job postings."),
 
-    ("📊 Smart Confidence Score",
-     "Provides an intelligent AI confidence gauge to estimate scam probability and trust levels."),
+    (
+        "🤖 AI-Powered Detection",
+        "Uses Machine Learning and NLP models trained on real-world recruitment datasets to identify fraudulent job postings."
+    ),
 
-    ("⚡ Real-Time Analysis",
-     "Instantly scans and analyzes pasted job descriptions with fast AI-driven predictions."),
+    (
+        "📊 Smart Confidence Score",
+        "Provides an intelligent AI confidence gauge to estimate scam probability and trust levels."
+    ),
 
-    ("🌌 Futuristic User Interface",
-     "Designed with cinematic dark themes, neon glow effects, glassmorphism cards, and modern startup-style aesthetics.")
+    (
+        "⚡ Real-Time Analysis",
+        "Instantly scans and analyzes pasted job descriptions with fast AI-driven predictions."
+    ),
+
+    (
+        "🌌 Futuristic User Interface",
+        "Designed with cinematic dark themes, neon glow effects, glassmorphism cards, and modern startup aesthetics."
+    )
 ]
 
 for title, desc in features:
+
     st.markdown(f"""
     <div class="feature-box">
         <h3>{title}</h3>
@@ -174,7 +302,9 @@ for title, desc in features:
 # TECHNOLOGIES SECTION
 
 st.markdown("""
-<div class="section-title">🧠 Technologies Used</div>
+<div class="section-title">
+🧠 Technologies Used
+</div>
 
 <div class="description">
 
@@ -193,7 +323,9 @@ st.markdown("""
 # FUTURE SECTION
 
 st.markdown("""
-<div class="section-title">🔮 Future Vision</div>
+<div class="section-title">
+🔮 Future Vision
+</div>
 
 <div class="description">
 
@@ -211,12 +343,16 @@ JobShield AI is designed to evolve into a complete AI recruitment safety ecosyst
 
 The mission is simple:
 
+<br><br>
+
 <b>Make online job searching safer for everyone.</b>
 
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_html=True)
+# CLOSE GLASS CARD
+
+st.markdown("</div>", unsafe_allow_html=True)
 
 # FOOTER
 
@@ -225,3 +361,7 @@ st.markdown("""
 Built with AI • NLP • Cybersecurity • Machine Learning
 </div>
 """, unsafe_allow_html=True)
+
+# CLOSE MAIN OVERLAY
+
+st.markdown("</div>", unsafe_allow_html=True)

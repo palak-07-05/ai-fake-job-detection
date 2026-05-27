@@ -1,42 +1,93 @@
 import sqlite3
+import hashlib
 
+# =========================================
 # CONNECT DATABASE
+# =========================================
 
-conn = sqlite3.connect("users.db", check_same_thread=False)
+conn = sqlite3.connect(
+    "users.db",
+    check_same_thread=False
+)
 
-cursor = conn.cursor()
+c = conn.cursor()
 
-# CREATE TABLE
+# =========================================
+# CREATE USERS TABLE
+# =========================================
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS users (
-    username TEXT,
+c.execute("""
+CREATE TABLE IF NOT EXISTS users(
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    username TEXT UNIQUE,
+
     password TEXT
 )
 """)
 
 conn.commit()
 
+# =========================================
+# HASH PASSWORD
+# =========================================
+
+def make_hash(password):
+
+    return hashlib.sha256(
+        str.encode(password)
+    ).hexdigest()
+
+# =========================================
 # ADD USER
+# =========================================
 
 def add_user(username, password):
 
-    cursor.execute(
-        "INSERT INTO users (username, password) VALUES (?, ?)",
-        (username, password)
+    # Check if username already exists
+    c.execute(
+        "SELECT * FROM users WHERE username=?",
+        (username,)
+    )
+
+    existing_user = c.fetchone()
+
+    if existing_user:
+
+        return False
+
+    # Insert new user
+    c.execute(
+        "INSERT INTO users(username, password) VALUES (?, ?)",
+        (
+            username,
+            make_hash(password)
+        )
     )
 
     conn.commit()
 
+    return True
+
+# =========================================
 # LOGIN USER
+# =========================================
 
 def login_user(username, password):
 
-    cursor.execute(
+    c.execute(
         "SELECT * FROM users WHERE username=? AND password=?",
-        (username, password)
+        (
+            username,
+            make_hash(password)
+        )
     )
 
-    data = cursor.fetchone()
+    data = c.fetchone()
 
-    return data
+    if data:
+
+        return True
+
+    return False
