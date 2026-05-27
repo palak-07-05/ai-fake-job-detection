@@ -1,93 +1,71 @@
 import sqlite3
-import hashlib
 
 # =========================================
 # CONNECT DATABASE
 # =========================================
 
 conn = sqlite3.connect(
-    "users.db",
+    "jobshield.db",
     check_same_thread=False
 )
 
 c = conn.cursor()
 
 # =========================================
-# CREATE USERS TABLE
+# INITIALIZE DATABASE
 # =========================================
 
-c.execute("""
-CREATE TABLE IF NOT EXISTS users(
+def init_db():
 
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    c.execute("""
 
-    username TEXT UNIQUE,
+    CREATE TABLE IF NOT EXISTS predictions (
 
-    password TEXT
-)
-""")
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-conn.commit()
+        job_text TEXT,
 
-# =========================================
-# HASH PASSWORD
-# =========================================
-
-def make_hash(password):
-
-    return hashlib.sha256(
-        str.encode(password)
-    ).hexdigest()
-
-# =========================================
-# ADD USER
-# =========================================
-
-def add_user(username, password):
-
-    # Check if username already exists
-    c.execute(
-        "SELECT * FROM users WHERE username=?",
-        (username,)
+        result TEXT
     )
 
-    existing_user = c.fetchone()
+    """)
 
-    if existing_user:
+    conn.commit()
 
-        return False
+# =========================================
+# INSERT PREDICTION
+# =========================================
 
-    # Insert new user
+def insert_prediction(job_text, result):
+
     c.execute(
-        "INSERT INTO users(username, password) VALUES (?, ?)",
+        """
+        INSERT INTO predictions (
+            job_text,
+            result
+        )
+
+        VALUES (?, ?)
+        """,
+
         (
-            username,
-            make_hash(password)
+            job_text,
+            result
         )
     )
 
     conn.commit()
 
-    return True
-
 # =========================================
-# LOGIN USER
+# FETCH ALL RECORDS
 # =========================================
 
-def login_user(username, password):
+def fetch_all():
 
     c.execute(
-        "SELECT * FROM users WHERE username=? AND password=?",
-        (
-            username,
-            make_hash(password)
-        )
+        "SELECT * FROM predictions"
     )
 
-    data = c.fetchone()
+    data = c.fetchall()
 
-    if data:
-
-        return True
-
-    return False
+    return data
