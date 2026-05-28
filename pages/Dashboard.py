@@ -5,14 +5,27 @@ import matplotlib.pyplot as plt
 from database import fetch_all
 
 # =========================================
+# PAGE CONFIG
+# =========================================
+
+st.set_page_config(
+    page_title="Dashboard | JobShield AI",
+    page_icon="📊",
+    layout="wide"
+)
+
+# =========================================
 # PAGE TITLE
 # =========================================
 
 st.title("📊 JobShield AI Dashboard")
 
-st.markdown(
-    "Monitor fake job detection statistics and recent activity."
-)
+st.markdown("""
+Track fake job detection statistics, AI insights,
+and recent recruitment scam analysis activity.
+""")
+
+st.markdown("---")
 
 # =========================================
 # FETCH DATABASE RECORDS
@@ -33,41 +46,41 @@ real_count = sum(
 )
 
 # =========================================
-# METRICS
+# OVERVIEW METRICS
 # =========================================
 
-st.subheader("Overview")
+st.subheader("📌 Overview")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
 
     st.metric(
-        "Total Jobs Checked",
-        total
+        label="Total Jobs Checked",
+        value=total
     )
 
 with col2:
 
     st.metric(
-        "Fake Jobs Detected",
-        fake_count
+        label="Fake Jobs Detected",
+        value=fake_count
     )
 
 with col3:
 
     st.metric(
-        "Legitimate Jobs",
-        real_count
+        label="Legitimate Jobs",
+        value=real_count
     )
 
 st.markdown("---")
 
 # =========================================
-# PIE CHART
+# CHART SECTION
 # =========================================
 
-st.subheader("Detection Distribution")
+st.subheader("📈 Detection Distribution")
 
 if total > 0:
 
@@ -82,7 +95,7 @@ if total > 0:
     ]
 
     fig, ax = plt.subplots(
-        figsize=(5, 5)
+        figsize=(6, 6)
     )
 
     ax.pie(
@@ -105,10 +118,10 @@ else:
 st.markdown("---")
 
 # =========================================
-# RECENT PREDICTIONS
+# RECENT PREDICTIONS TABLE
 # =========================================
 
-st.subheader("Recent Predictions")
+st.subheader("🧾 Recent Predictions")
 
 if total > 0:
 
@@ -121,11 +134,13 @@ if total > 0:
         ]
     )
 
+    # latest first
     df = df[::-1]
 
     st.dataframe(
         df,
-        use_container_width=True
+        use_container_width=True,
+        height=400
     )
 
 else:
@@ -140,30 +155,30 @@ st.markdown("---")
 # AI INSIGHTS
 # =========================================
 
-st.subheader("AI Insights")
+st.subheader("🧠 AI Insights")
 
 if total == 0:
 
     st.info(
-        "Analyze some job descriptions to generate insights."
+        "Analyze job descriptions to generate AI insights."
     )
 
 elif fake_count > real_count:
 
     st.error(
-        "⚠️ High number of suspicious job postings detected."
+        "⚠️ A high number of suspicious job postings were detected. Users should verify recruiters and company details carefully."
     )
 
 elif real_count > fake_count:
 
     st.success(
-        "✅ Most analyzed jobs appear legitimate."
+        "✅ Most analyzed job postings appear legitimate based on AI analysis."
     )
 
 else:
 
     st.info(
-        "📌 Equal number of fake and real jobs detected."
+        "📌 Equal number of fake and real job postings detected."
     )
 
 st.markdown("---")
@@ -172,8 +187,12 @@ st.markdown("---")
 # SYSTEM STATUS
 # =========================================
 
-st.subheader("System Status")
+st.subheader("⚙️ System Status")
 
 st.success(
     "🟢 AI Detection System Active"
+)
+
+st.caption(
+    "Machine Learning • NLP • Real-Time Fraud Detection"
 )
