@@ -163,33 +163,35 @@ st.markdown("""
 # GLASS CARD
 st.markdown('<div class="glass-card">', unsafe_allow_html=True)
 
-# ABOUT
+# ABOUT (IMPROVED)
 st.markdown("""
-<div class="section-title">🌍 About The Platform</div>
+<div class="section-title">About JobShield AI</div>
 
 <div class="description">
-JobShield AI is an intelligent fake job detection system designed to protect job seekers from fraudulent recruitment scams.
+JobShield AI is a machine learning-based web application designed to detect fake job postings and help users avoid online recruitment scams.
 
-It uses Machine Learning and NLP to analyze job descriptions and detect suspicious patterns in real time.
+It analyzes job descriptions using Natural Language Processing (NLP) and identifies suspicious patterns such as unrealistic salary claims, misleading job roles, and fraudulent hiring behavior.
+
+The system is built to assist students, freshers, and job seekers in making safer and more informed career decisions.
 </div>
 """, unsafe_allow_html=True)
 
-# FEATURES DATA (IMPORTANT: MUST BE ABOVE)
+# FEATURES DATA (IMPROVED)
 features = [
-    ("🤖 AI Detection", "Detects fake jobs using ML + NLP models."),
-    ("📊 Fraud Score", "Gives scam probability score."),
-    ("⚡ Real-Time Scan", "Instant job description analysis."),
-    ("🌌 Modern UI", "Glassmorphism futuristic interface.")
+    ("🤖 AI-Based Detection", "Classifies job postings as real or fake using trained ML models."),
+    ("📊 Fraud Probability Score", "Displays confidence level of prediction for better transparency."),
+    ("⚡ Real-Time Analysis", "Instantly processes job descriptions and generates results."),
+    ("🛡️ Scam Prevention", "Helps users avoid fraudulent and misleading job offers.")
 ]
 
-# FEATURES SECTION TITLE
+# FEATURES TITLE
 st.markdown("""
 <div class="section-title">
-🚀 Core Features
+Core Features
 </div>
 """, unsafe_allow_html=True)
 
-# HORIZONTAL FEATURE ROW
+# HORIZONTAL FEATURES
 cols = st.columns(len(features), gap="small")
 
 for col, (title, desc) in zip(cols, features):
@@ -201,39 +203,42 @@ for col, (title, desc) in zip(cols, features):
         </div>
         """, unsafe_allow_html=True)
 
-
-# TECHNOLOGIES + FUTURE (SIDE BY SIDE)
+# TECHNOLOGIES + FUTURE
 col1, col2 = st.columns(2, gap="large")
 
 with col1:
     st.markdown("""
-    <div class="section-title">🧠 Technologies Used</div>
+    <div class="section-title">Technologies Used</div>
 
     <div class="description">
-    • Python<br>
-    • Streamlit<br>
-    • Machine Learning<br>
-    • NLP<br>
-    • Scikit-learn<br>
-    • TF-IDF Vectorization<br>
-    • Plotly<br>
-    • SQLite<br>
+    • Python (Core Development)<br>
+    • Streamlit (Web Framework)<br>
+    • Machine Learning (Classification Models)<br>
+    • NLP (Text Processing)<br>
+    • Scikit-learn (Model Training)<br>
+    • TF-IDF Vectorization (Feature Extraction)<br>
+    • Pandas (Data Handling)<br>
+    • SQLite (Database)<br>
     </div>
     """, unsafe_allow_html=True)
 
 with col2:
     st.markdown("""
-    <div class="section-title">🔮 Future Vision</div>
+    <div class="section-title">Future Vision</div>
 
     <div class="description">
-    • Resume-job matching<br>
-    • AI chatbot support<br>
-    • Fake company detection<br>
-    • Cybersecurity tools<br>
-    • Cloud deployment<br>
-    • User authentication<br><br>
+    JobShield AI is being developed into a complete job safety and recruitment intelligence system.
 
-    <b>Making job search safer for everyone.</b>
+    <ul>
+    <li>Resume-job compatibility matching</li>
+    <li>Fake company detection module</li>
+    <li>AI chatbot for job verification</li>
+    <li>Advanced fraud analytics dashboard</li>
+    <li>Cloud-based deployment</li>
+    <li>User authentication system</li>
+    </ul>
+
+    
     </div>
     """, unsafe_allow_html=True)
 
